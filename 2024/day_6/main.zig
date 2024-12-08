@@ -8,6 +8,7 @@ const arr = struct {
 };
 
 pub fn main() !void {
+    const startTime = @as(f128, @floatFromInt(std.time.nanoTimestamp()));
     const file = try std.fs.cwd().openFile("input.txt", .{});
 
     const reader = file.reader();
@@ -303,6 +304,8 @@ pub fn main() !void {
         }
         //std.debug.print("{s}\n", .{slice});
     }
+    const endTime = @as(f128, @floatFromInt(std.time.nanoTimestamp()));
     std.debug.print("num: {d}\n", .{count});
     std.debug.print("Loops: {d}\n", .{loops});
+    std.debug.print("time: {d}\n", .{(endTime - startTime) / @as(f128, @floatFromInt(std.time.ns_per_s))});
 }
