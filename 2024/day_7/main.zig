@@ -1,6 +1,8 @@
 const std = @import("std");
 
 pub fn main() !void {
+    const start_time: f64 = @floatFromInt(std.time.nanoTimestamp());
+
     const file = try std.fs.cwd().openFile("input.txt", .{});
 
     const reader = file.reader();
@@ -14,12 +16,14 @@ pub fn main() !void {
         std.debug.print("\n", .{});
         if (try possibleResult(@floatFromInt(list[0]), list[1..])) {
             count += list[0];
-            std.debug.print("works\n", .{});
+            //std.debug.print("works\n", .{});
         } else {
-            std.debug.print("does not work\n", .{});
+            //std.debug.print("does not work\n", .{});
         }
     }
+    const end_time: f64 = @floatFromInt(std.time.nanoTimestamp());
     std.debug.print("count: {d}\n", .{count});
+    std.debug.print("time: {d}\n", .{(end_time - start_time) / @as(f64, @floatFromInt(std.time.ns_per_s))});
 }
 
 pub fn possibleResult(expectedReslut: f64, list: []i64) !bool {
@@ -39,7 +43,7 @@ pub fn readLineAlloc(line: []u8) ![]i64 {
 
     while (splits.next()) |split| {
         const clean = std.mem.trim(u8, split, ": \n\r");
-        std.debug.print("{s} ", .{clean});
+        //std.debug.print("{s} ", .{clean});
         const num = try std.fmt.parseInt(i64, clean, 10);
         try arrayList.append(num);
     }
