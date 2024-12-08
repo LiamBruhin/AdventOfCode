@@ -5,12 +5,23 @@ const coords = struct {
     y: usize,
 };
 
+const function = struct {
+    m: f32,
+    x: f32,
+    y: f32,
+    fn get(self: function, x: usize) f32 {
+        return self.m * (@as(f32, @floatFromInt(x)) - self.x) + self.y;
+    }
+};
+
 pub fn main() !void {
-    const file = try std.fs.cwd().openFile("test.txt", .{});
+    const file = try std.fs.cwd().openFile("input.txt", .{});
 
     const reader = file.reader();
 
     const slice = try reader.readAllAlloc(std.heap.page_allocator, 1000000);
+    try file.seekTo(0);
+    const display = try reader.readAllAlloc(std.heap.page_allocator, 1000000);
 
     var splits = std.mem.split(u8, slice, "\n");
     const next = splits.next().?;
@@ -57,47 +68,66 @@ pub fn main() !void {
         std.debug.print("{d}\n", .{coordsList.len});
         for (0..(coordsList.len)) |antenaOne| {
             const posOne = coordsList[antenaOne];
-            const antenaOneIndex = posOne.y * pitch + posOne.x;
-            for (antenaOne..(coordsList.len)) |antenaTwo| {
+            //const antenaOneIndex = posOne.y * pitch + posOne.x;
+            for (antenaOne + 1..(coordsList.len)) |antenaTwo| {
                 const posTwo = coordsList[antenaTwo];
-                const antenaTwoIndex = posTwo.y * pitch + posTwo.x;
+                //const antenaTwoIndex = posTwo.y * pitch + posTwo.x;
+
                 const signedXOne: i32 = @intCast(posOne.x);
                 const signedYOne: i32 = @intCast(posOne.y);
                 const signedXTwo: i32 = @intCast(posTwo.x);
                 const signedYTwo: i32 = @intCast(posTwo.y);
                 const xDist: i32 = @intCast(signedXTwo - signedXOne);
                 const yDist: i32 = @intCast(signedYTwo - signedYOne);
+                if (posOne.x == posTwo.x) {
+                    for (0..rows) |row| {
+                        const i = row * pitch + posOne.x;
 
-                if (signedXTwo + xDist >= 0 and signedXTwo + xDist < cols) {
-                    if (signedYTwo + yDist >= 0 and signedYTwo + yDist < rows) {
-                        const antinodeOne = coords{
-                            .x = @intCast(signedXTwo + xDist),
-                            .y = @intCast(signedYTwo + yDist),
-                        };
-                        const a1Index = antinodeOne.y * pitch + antinodeOne.x;
-                        if (slice[a1Index] != '#' and a1Index != antenaOneIndex and a1Index != antenaTwoIndex) {
-                            slice[a1Index] = '#';
+                        if (slice[i] != '#') {
+                            slice[i] = '#';
+                            display[i] = key.*;
                             count += 1;
+                            std.debug.print("{s}\n\n", .{display});
+                            //std.time.sleep(0.01 * std.time.ns_per_s);
+                        }
+                    }
+                } else if (posOne.y == posTwo.y) {
+                    for (0..cols) |col| {
+                        const i = posOne.y * pitch + col;
+
+                        if (slice[i] != '#') {
+                            slice[i] = '#';
+                            display[i] = key.*;
+                            count += 1;
+                            std.debug.print("{s}\n\n", .{display});
+                            //std.time.sleep(0.01 * std.time.ns_per_s);
+                        }
+                    }
+                } else {
+                    const slope: f32 = @as(f32, @floatFromInt(yDist)) / @as(f32, @floatFromInt(xDist));
+                    const func = function{
+                        .x = @floatFromInt(posOne.x),
+                        .y = @floatFromInt(posOne.y),
+                        .m = slope,
+                    };
+
+                    for (0..cols) |col| {
+                        const y: f32 = func.get(@intCast(col));
+                        if (@floor(y) == y) {
+                            if (y >= 0 and y < @as(f32, @floatFromInt(rows))) {
+                                const ysize: usize = @intFromFloat(y);
+                                const i = ysize * pitch + col;
+                                if (slice[i] != '#') {
+                                    slice[i] = '#';
+                                    display[i] = key.*;
+                                    count += 1;
+                                    std.debug.print("{s}\n\n", .{display});
+                                    //std.time.sleep(0.01 * std.time.ns_per_s);
+                                }
+                            }
                         }
                     }
                 }
-
-                if (signedXOne - xDist >= 0 and signedXOne - xDist < cols) {
-                    if (signedYOne - yDist >= 0 and signedYOne - yDist < rows) {
-                        const antinodeTwo = coords{
-                            .x = @intCast(signedXOne - xDist),
-                            .y = @intCast(signedYOne - yDist),
-                        };
-
-                        const a2Index = antinodeTwo.y * pitch + antinodeTwo.x;
-                        if (slice[a2Index] != '#' and a2Index != antenaOneIndex and a2Index != antenaTwoIndex) {
-                            slice[a2Index] = '#';
-                            count += 1;
-                        }
-                    }
-                }
-
-                std.debug.print("{s}\n\n", .{slice});
             }
         }
     }
