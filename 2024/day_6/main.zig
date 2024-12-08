@@ -64,11 +64,11 @@ pub fn main() !void {
                 } else {
                     slice[tools.getIndex(x, y)] = 'X';
 
-                    try toVisit.append(tools.getIndex(x, y));
-
                     y -= 1;
-                    if (slice[tools.getIndex(x, y)] != 'X')
+                    if (slice[tools.getIndex(x, y)] != 'X') {
+                        try toVisit.append(tools.getIndex(x, y));
                         count += 1;
+                    }
                     slice[tools.getIndex(x, y)] = '^';
                 }
             } else if (slice[tools.getIndex(x, y)] == 'v') {
@@ -85,11 +85,11 @@ pub fn main() !void {
                 } else {
                     slice[tools.getIndex(x, y)] = 'X';
 
-                    try toVisit.append(tools.getIndex(x, y));
-
                     y += 1;
-                    if (slice[tools.getIndex(x, y)] != 'X')
+                    if (slice[tools.getIndex(x, y)] != 'X') {
                         count += 1;
+                        try toVisit.append(tools.getIndex(x, y));
+                    }
                     slice[tools.getIndex(x, y)] = 'v';
                 }
             } else if (slice[tools.getIndex(x, y)] == '>') {
@@ -106,11 +106,11 @@ pub fn main() !void {
                 } else {
                     slice[tools.getIndex(x, y)] = 'X';
 
-                    try toVisit.append(tools.getIndex(x, y));
-
                     x += 1;
-                    if (slice[tools.getIndex(x, y)] != 'X')
+                    if (slice[tools.getIndex(x, y)] != 'X') {
+                        try toVisit.append(tools.getIndex(x, y));
                         count += 1;
+                    }
                     slice[tools.getIndex(x, y)] = '>';
                 }
             } else if (slice[tools.getIndex(x, y)] == '<') {
@@ -127,11 +127,11 @@ pub fn main() !void {
                 } else {
                     slice[tools.getIndex(x, y)] = 'X';
 
-                    try toVisit.append(tools.getIndex(x, y));
-
                     x -= 1;
-                    if (slice[tools.getIndex(x, y)] != 'X')
+                    if (slice[tools.getIndex(x, y)] != 'X') {
                         count += 1;
+                        try toVisit.append(tools.getIndex(x, y));
+                    }
                     slice[tools.getIndex(x, y)] = '<';
                 }
             }
@@ -163,7 +163,7 @@ pub fn main() !void {
                 var currentDirslice: [1]u8 = .{currentDir};
                 if (std.mem.containsAtLeast(u8, visitedDirs, 1, &currentDirslice)) {
                     loops += 1;
-                    std.debug.print("inf\n", .{});
+                    //std.debug.print("inf\n", .{});
                     break;
                 }
             }
@@ -301,7 +301,7 @@ pub fn main() !void {
                 break;
             }
         }
-        std.debug.print("{s}\n", .{slice});
+        //std.debug.print("{s}\n", .{slice});
     }
     std.debug.print("num: {d}\n", .{count});
     std.debug.print("Loops: {d}\n", .{loops});
