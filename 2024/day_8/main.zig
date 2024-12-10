@@ -91,18 +91,6 @@ pub fn main() !void {
                             //std.time.sleep(0.01 * std.time.ns_per_s);
                         }
                     }
-                } else if (posOne.y == posTwo.y) {
-                    for (0..cols) |col| {
-                        const i = posOne.y * pitch + col;
-
-                        if (slice[i] != '#') {
-                            slice[i] = '#';
-                            display[i] = key.*;
-                            count += 1;
-                            std.debug.print("{s}\n\n", .{display});
-                            //std.time.sleep(0.01 * std.time.ns_per_s);
-                        }
-                    }
                 } else {
                     const slope: f32 = @as(f32, @floatFromInt(yDist)) / @as(f32, @floatFromInt(xDist));
                     const func = function{
@@ -112,8 +100,8 @@ pub fn main() !void {
                     };
 
                     for (0..cols) |col| {
-                        const y: f32 = func.get(@intCast(col));
-                        if (@floor(y) == y) {
+                        const y: f32 = func.get(col);
+                        if (y - @floor(y) < 0.001) {
                             if (y >= 0 and y < @as(f32, @floatFromInt(rows))) {
                                 const ysize: usize = @intFromFloat(y);
                                 const i = ysize * pitch + col;
